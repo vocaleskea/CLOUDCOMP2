@@ -3,69 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To do List</title>
+    <title>Create Task</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <div class="container">
-
-
         <div class="box">
-
-            <h1>new task</h1>
-
-
+            <h1>Create a New Task</h1>
             <form id="myForm">
-                <label for="username">tasks:</label>
-                <input type="text" id="task" name="username"><br>
-                <label for="username">deadline:</label>
-                <input type="text" id="deadline" name="username"><br>
+                <label for="task">Task:</label>
+                <input type="text" id="task"><br>
+
+                <label for="deadline">Deadline:</label>
+                <input type="text" id="deadline"><br>
+
                 <button type="submit">Create</button>
             </form>
-
-
         </div>
-        
-            
     </div>
- 
+
     <script>
         function getCookie(name) {
             let cookie = {};
             document.cookie.split(';').forEach(function(el) {
                 let split = el.split('=');
-                cookie[split[0].trim()] = split.slice(1).join("=");
-            })
+                cookie[split[0].trim()] = split.slice(1).join('=');
+            });
             return cookie[name];
         }
-        // Attach event listener to the form submit event
-        
 
-
-        console.log('cookie',getCookie('username'))
-        // Attach event listener to the form submit event
         document.getElementById('myForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent form from refreshing the page
+            event.preventDefault();
 
+            const task = document.getElementById('task').value.trim();
+            const deadline = document.getElementById('deadline').value.trim();
+            const user = getCookie('username');
 
-            const data = {
-                'task':document.getElementById('task').value,
-                'deadline':document.getElementById('deadline').value,
-                'user':getCookie('username'),
+            if (!task || !deadline || !user) {
+                alert("Please fill all fields and make sure you're logged in.");
+                return;
             }
 
-            axios.post('http://127.0.0.1:8000/create_task/',data)
-            .then(function (response) {
+            const data = { task, deadline, user };
 
-                console.log(response.data.message)
-                console.log(data)
-            })
-            .catch(function (error) {
-                console.log(error.response ? error.response.data : error.message)
-            });
+            axios.post('http://127.0.0.1:8000/create_task/', data)
+                .then(function (response) {
+                    alert("Task Created!");
+                    // Optional: Clear form or redirect
+                    document.getElementById('myForm').reset();
+                    window.location.href = "main.html"; // redirect to task list
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    alert("Error creating task: " + (error.response?.data?.detail || error.message));
+                });
         });
     </script>
+
 </body>
-<
+</html>
